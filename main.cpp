@@ -1,25 +1,57 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <cmath>
+#include <valarray>
+#include <algorithm>
+#include <map>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the
-    // <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+using namespace std;
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code.
-        // We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/>
-        // breakpoint for you, but you can always add more by pressing
-        // <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+struct Perceptron
+{
+    vector<double> weights;
+    double threshold;
+    double learningRate;
+
+    explicit Perceptron(const vector<double>& w ={}, const double t = 0., const double lRate = 1.)
+    {
+        weights = w;
+        threshold = t;
+        learningRate = lRate;
     }
 
+    auto deltaRule(const double d, const double y, const vector<double>& inputs)-> void
+    {
+        if (weights.size() != inputs.size())
+        {
+            weights.resize(inputs.size());
+        }
+        for (auto i = 0; i < inputs.size(); i++)
+        {
+            weights.at(i) += (d - y) * learningRate * inputs.at(i);
+        }
+    }
+
+    [[nodiscard]] auto getOutput(const vector<double>& inputs) const -> double
+    {
+        double y = 0.;
+        double dotProduct = 0.;
+
+        for (auto i = 0; i < weights.size(); i++)
+        {
+            dotProduct = weights.at(i) * inputs.at(i);
+        }
+
+        y = dotProduct - threshold;
+        return y;
+    }
+
+};
+
+auto main()-> int
+{
     return 0;
 }
-
-// TIP See CLion help at <a
-// href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>.
-//  Also, you can try interactive lessons for CLion by selecting
-//  'Help | Learn IDE Features' from the main menu.
