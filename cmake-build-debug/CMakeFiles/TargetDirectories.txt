@@ -1,0 +1,3 @@
+C:/Users/efe_3/CLionProjects/LanguageClassifier/cmake-build-debug/CMakeFiles/LanguageClassifier.dir
+C:/Users/efe_3/CLionProjects/LanguageClassifier/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/efe_3/CLionProjects/LanguageClassifier/cmake-build-debug/CMakeFiles/rebuild_cache.dir
