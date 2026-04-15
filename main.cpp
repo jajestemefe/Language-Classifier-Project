@@ -6,7 +6,6 @@
 #include <cmath>
 #include <valarray>
 #include <algorithm>
-#include <map>
 #include <filesystem>
 #include <random>
 
@@ -100,7 +99,6 @@ struct Perceptron
 struct Language
 {
     string header;
-    //vector<string> files;
     vector<vector<double>> fileFrequencies;
 
     explicit Language(const string& path)
@@ -116,7 +114,6 @@ struct Language
                 stringstream ss;
                 ss << file.rdbuf();
 
-                //files.push_back(ss.str());
                 fileFrequencies.push_back(getFrequencies(ss.str()));
             }
         }
@@ -154,19 +151,8 @@ auto main()-> int
 
     if (trainingLanguages.empty())
     {
-        cerr << "No language detected!" << endl;
+        cerr << "No languages to train!" << endl;
         return -1;
-    }
-
-    if (fs::exists(testingPath) && fs::is_directory(testingPath))
-    {
-        for (const auto& entry : fs::directory_iterator(testingPath))
-        {
-            if (entry.is_directory())
-            {
-                testingLanguages.emplace_back(entry.path().string());
-            }
-        }
     }
 
     vector<TrainingSample> dataset;
@@ -188,7 +174,7 @@ auto main()-> int
 
     for (int epoch = 0; epoch < maxEpochs; epoch++)
     {
-        shuffle(dataset.begin(), dataset.end(), g);
+        ranges::shuffle(dataset, g);
         double totalError = 0.;
 
         for (const auto& sample : dataset)
@@ -210,7 +196,22 @@ auto main()-> int
         }
     }
 
-    if (!testingLanguages.empty())
+    if (fs::exists(testingPath) && fs::is_directory(testingPath))
+    {
+        for (const auto& entry : fs::directory_iterator(testingPath))
+        {
+            if (entry.is_directory())
+            {
+                testingLanguages.emplace_back(entry.path().string());
+            }
+        }
+    }
+
+    if (testingLanguages.empty())
+    {
+        cout << "No testing file" << endl;
+    }
+    else
     {
         cout << "\n--- Testing Performance ---" << endl;
         int totalCorrect = 0;
@@ -252,7 +253,7 @@ auto main()-> int
             }
         }
 
-        double accuracy = (double)totalCorrect / totalTests;
+        double accuracy = static_cast<double>(totalCorrect) / totalTests;
 
         cout << "Accuracy: " << accuracy * 100. << "%\n" << endl;
         cout << left << setw(15) << "Language" << setw(12) << "Precision" << setw(10) << "Recall" << "F-Measure" << endl;
@@ -274,16 +275,12 @@ auto main()-> int
                  << setprecision(3) << fMeasure << endl;
         }
     }
-    else
-    {
-        cout << "No testing file" << endl;
-    }
 
     cout << "\n--- Classification Ready ---" << endl;
     while (true)
     {
         cout << "\nEnter text to classify (or type 'stop' to quit): \n>>> ";
-        string input = "";
+        string input;
         string line;
 
         while (getline(cin, line))
